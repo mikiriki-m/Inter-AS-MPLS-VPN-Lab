@@ -138,6 +138,15 @@ router bgp 1
  exit-address-family
 ```
 
+
+```
+ address-family ipv4 vrf VPN2
+  neighbor 10.1.12.1 remote-as 65002
+  neighbor 10.1.12.1 activate
+ exit-address-family
+```
+
+
 # Network Topology & Routing Table Documentation
 
 This repository maintains the running configurations and state documentation for the MPLS Inter-AS network architecture. Below is the organized reference tracking for all device interfaces, VRF routing instances, and BGP tables.
@@ -194,25 +203,17 @@ The exchange table mapping how multi-protocol labels cross autonomous boundaries
 | **4:1** (Remote ASBR2) | [cite_start]`44.44.44.44/32` [cite: 65] | [cite_start]`10.12.0.4` [cite: 65] | *N/A* | [cite_start]`2 65004 i` [cite: 65] |
 
 ---
-
 ## 4. MPLS Architectural & Path Analysis
 
 ### Inter-AS Option B Implementation
-* [cite_start]**Design Pattern**: ASBR1 explicitly suppresses traditional target filtering via `no bgp default route-target filter`[cite: 55].
-* [cite_start]**Label Distribution**: Label assignment relies on standard MPLS over BGP interactions (`mpls bgp forwarding`) across the Inter-AS boundary link[cite: 53].
+* **Design Pattern**: ASBR1 explicitly suppresses traditional target filtering via `no bgp default route-target filter`.
+* **Label Distribution**: Label assignment relies on standard MPLS over BGP interactions (`mpls bgp forwarding`) across the Inter-AS boundary link.
 
 ### Operational Path Verification (CE1 Data)
-[cite_start]A trace execution targeting loopback address `33.33.33.33` yields the following explicit label stack layout[cite: 16]:
+A trace execution targeting loopback address `33.33.33.33` yields the following explicit label stack layout:
 
-* [cite_start]**Hop 1 (`10.1.11.2`)**: PE1 Ingress VRF Node[cite: 16].
-* [cite_start]**Hop 2 (`10.1.13.3`)**: ASBR1 Transiting Label Core Node -> **[MPLS: Label 20, Exp 0]**[cite: 16].
-* [cite_start]**Hop 3 (`10.12.0.4`)**: ASBR2 Border Interface Node -> **[MPLS: Label 18, Exp 0]**[cite: 16].
-* [cite_start]**Hop 4 (`10.2.21.2`)**: Remote PE Egress Node Area -> **[MPLS: Label 17, Exp 0]**[cite: 16].
-* [cite_start]**Hop 5 (`10.2.21.1`)**: Remote Customer Edge Target Node[cite: 16].
-
-```
- address-family ipv4 vrf VPN2
-  neighbor 10.1.12.1 remote-as 65002
-  neighbor 10.1.12.1 activate
- exit-address-family
-```
+* **Hop 1 (`10.1.11.2`)**: PE1 Ingress VRF Node.
+* **Hop 2 (`10.1.13.3`)**: ASBR1 Transiting Label Core Node -> **[MPLS: Label 20, Exp 0]**
+* **Hop 3 (`10.12.0.4`)**: ASBR2 Border Interface Node -> **[MPLS: Label 18, Exp 0]**
+* **Hop 4 (`10.2.21.2`)**: Remote PE Egress Node Area -> **[MPLS: Label 17, Exp 0]**
+* **Hop 5 (`10.2.21.1`)**: Remote Customer Edge Target Node.
