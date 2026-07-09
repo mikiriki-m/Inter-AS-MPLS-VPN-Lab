@@ -203,72 +203,16 @@ neighbor 10.12.0.4 activate
 ```
 
 # Network Topology & Routing Table Documentation
-
-This repository maintains the running configurations and state documentation for the MPLS Inter-AS network architecture. Below is the organized reference tracking for all device interfaces, VRF routing instances, and BGP tables.
-
----
-
-## 1. Global Interface & Address Mapping
-
-The following table comprehensively indexes all physical and logical interfaces across the current infrastructure topology.
-
-| Device | Interface | IP Address | Subnet Mask | Description / Role | Status |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **CE1** | Loopback0 | [cite_start]`11.11.11.11` [cite: 8] | [cite_start]`255.255.255.255` [cite: 8] | Router ID / Loopback | Up |
-| | FastEthernet0/0 | [cite_start]*None* [cite: 9] | [cite_start]*N/A* [cite: 9] | Unused | [cite_start]Shutdown [cite: 9] |
-| | GigabitEthernet1/0 | [cite_start]`10.1.11.1` [cite: 9] | [cite_start]`255.255.255.0` [cite: 9] | Link to PE1 | Up |
-| **CE2** | Loopback0 | [cite_start]`22.22.22.22` [cite: 19] | [cite_start]`255.255.255.255` [cite: 19] | Router ID / Loopback | Up |
-| | FastEthernet0/0 | [cite_start]*None* [cite: 20] | [cite_start]*N/A* [cite: 20] | Unused | [cite_start]Shutdown [cite: 20] |
-| | GigabitEthernet1/0 | [cite_start]`10.1.12.1` [cite: 20] | [cite_start]`255.255.255.0` [cite: 20] | Link to PE1 (VPN2) | Up |
-| **PE1** | Loopback0 | [cite_start]`1.1.1.1` [cite: 30] | [cite_start]`255.255.255.255` [cite: 30] | Core Router ID / Loopback | Up |
-| | FastEthernet0/0 | [cite_start]*None* [cite: 31] | [cite_start]*N/A* [cite: 31] | Unused | [cite_start]Shutdown [cite: 31] |
-| | GigabitEthernet1/0 | [cite_start]`10.1.13.1` [cite: 31] | [cite_start]`255.255.255.0` [cite: 31] | Core Link to ASBR1 (MPLS Enabled) | [cite_start]Up [cite: 31] |
-| | GigabitEthernet2/0 | [cite_start]`10.1.11.2` [cite: 32] | [cite_start]`255.255.255.0` [cite: 32] | CE1 Connection (VRF VPN1) | [cite_start]Up [cite: 32] |
-| | GigabitEthernet3/0 | [cite_start]`10.1.12.2` [cite: 33] | [cite_start]`255.255.255.0` [cite: 33] | CE2 Connection (VRF VPN2) | [cite_start]Up [cite: 33] |
-| | GigabitEthernet4/0 | [cite_start]*None* [cite: 34] | [cite_start]*N/A* [cite: 34] | Unused | [cite_start]Shutdown [cite: 34] |
-| **ASBR1**| Loopback0 | [cite_start]`3.3.3.3` [cite: 51] | [cite_start]`255.255.255.255` [cite: 51] | Core Router ID / Loopback | Up |
-| | FastEthernet0/0 | [cite_start]*None* [cite: 52] | [cite_start]*N/A* [cite: 52] | Unused | [cite_start]Shutdown [cite: 52] |
-| | GigabitEthernet1/0 | [cite_start]`10.1.13.3` [cite: 52] | [cite_start]`255.255.255.0` [cite: 52] | Link to PE1 (MPLS Enabled) | [cite_start]Up [cite: 52] |
-| | GigabitEthernet2/0 | [cite_start]`10.12.0.3` [cite: 53] | [cite_start]`255.255.255.0` [cite: 53] | Inter-AS Link to ASBR2 (MPLS BGP) | [cite_start]Up [cite: 53] |
-
----
-
-## 2. Active VRF Routing Table (PE1 - VPN1)
-
-The following entries reflect the active local routing state extracted from PE1's `show ip route vrf VPN1` instance:
-
-| Protocol Type | Destination Prefix | Next Hop | Outbound Interface / BGP Details |
-| :---: | :--- | :--- | :--- |
-| **C** (Connected) | [cite_start]`10.1.11.0/24` [cite: 46] | [cite_start]Directly Connected [cite: 46] | [cite_start]GigabitEthernet2/0 [cite: 46] |
-| **L** (Local) | [cite_start]`10.1.11.2/32` [cite: 46] | [cite_start]Directly Connected [cite: 46] | [cite_start]GigabitEthernet2/0 [cite: 46] |
-| **B** (BGP) | [cite_start]`11.11.11.11/32` [cite: 46, 47] | [cite_start]`10.1.11.1` [cite: 47] | [cite_start]External BGP via CE1 [cite: 47] |
-| **B** (BGP) | [cite_start]`33.33.33.33/32` [cite: 47] | [cite_start]`3.3.3.3` [cite: 47] | [cite_start]Internal iBGP via ASBR1 loopback [cite: 47] |
-
----
-
-## 3. ASBR1 BGP VPNv4 Routing Table
-
-The exchange table mapping how multi-protocol labels cross autonomous boundaries, from the perspective of `ASBR1`:
-
-| Route Distinguisher (RD) | Target Network Prefix | Next Hop Address | AS-Path / Origin Type |
-| :--- | :--- | :--- | :---: | :--- |
-| **1:1** (VPN1 via PE1) | [cite_start]`11.11.11.11/32` [cite: 64] | [cite_start]`1.1.1.1` [cite: 64] |  [cite_start]`65001 i` [cite: 64] |
-| **1:2** (VPN2 via PE1) | [cite_start]`22.22.22.22/32` [cite: 64, 65] | [cite_start]`1.1.1.1` [cite: 64] | [cite_start]`65002 i` [cite: 65] |
-| **3:1** (Remote ASBR2) | [cite_start]`33.33.33.33/32` [cite: 65] | [cite_start]`10.12.0.4` [cite: 65] |  [cite_start]`2 65003 i` [cite: 65] |
-| **4:1** (Remote ASBR2) | [cite_start]`44.44.44.44/32` [cite: 65] | [cite_start]`10.12.0.4` [cite: 65] | [cite_start]`2 65004 i` [cite: 65] |
-
----
-## 4. MPLS Architectural & Path Analysis
-
-### Inter-AS Option B Implementation
-* **Design Pattern**: ASBR1 explicitly suppresses traditional target filtering via `no bgp default route-target filter`.
-* **Label Distribution**: Label assignment relies on standard MPLS over BGP interactions (`mpls bgp forwarding`) across the Inter-AS boundary link.
-
-### Operational Path Verification (CE1 Data)
-A trace execution targeting loopback address `33.33.33.33` yields the following explicit label stack layout:
-
-* **Hop 1 (`10.1.11.2`)**: PE1 Ingress VRF Node.
-* **Hop 2 (`10.1.13.3`)**: ASBR1 Transiting Label Core Node -> **[MPLS: Label 20, Exp 0]**
-* **Hop 3 (`10.12.0.4`)**: ASBR2 Border Interface Node -> **[MPLS: Label 18, Exp 0]**
-* **Hop 4 (`10.2.21.2`)**: Remote PE Egress Node Area -> **[MPLS: Label 17, Exp 0]**
-* **Hop 5 (`10.2.21.1`)**: Remote Customer Edge Target Node.
+| Device | Interface | IP Address | Subnet Mask | Description / Connection |
+| :--- | :--- | :--- | :--- | :--- |
+| **CE1** | Loopback0 | `11.11.11.11` | `255.255.255.255` | Router ID / Loopback |
+| | GigabitEthernet1/0 | `10.1.11.1` | `255.255.255.0` | Link to PE1 |
+| **CE2** | Loopback0 | `22.22.22.22` | `255.255.255.255` | Router ID / Loopback |
+| | GigabitEthernet1/0 | `10.1.12.1` | `255.255.255.0` | Link to PE1 (VPN2) |
+| **PE1** | Loopback0 | `1.1.1.1` | `255.255.255.255` | Core Loopback / Router ID |
+| | GigabitEthernet1/0 | `10.1.13.1` | `255.255.255.0` | Core Link to ASBR1 (MPLS) |
+| | GigabitEthernet2/0 | `10.1.11.2` | `255.255.255.0` | Link to CE1 (VRF VPN1) |
+| | GigabitEthernet3/0 | `10.1.12.2` | `255.255.255.0` | Link to CE2 (VRF VPN2) |
+| **ASBR1** | Loopback0 | `3.3.3.3` | `255.255.255.255` | Core Loopback / Router ID |
+| | GigabitEthernet1/0 | `10.1.13.3` | `255.255.255.0` | Core Link to PE1 (MPLS) |
+| | GigabitEthernet2/0 | `10.12.0.3` | `255.255.255.0` | Inter-AS Link to ASBR2 |
