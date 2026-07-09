@@ -113,14 +113,17 @@ router ospf 1
 ```
 
 MULTI-PROTOCOL BGP configuration:
--
+- The neighbour command forms a BGP relationship with the router at 3.3.3.3
+- Update-source Loopback0 uses its own loopback address as the source IP. This ensures network redundancy as the loopback address is always available, and the iBGP session will stay active.
 ```
 router bgp 1
  bgp log-neighbor-changes
  neighbor 3.3.3.3 remote-as 1
  neighbor 3.3.3.3 update-source Loopback0
 ```
-
+- Address family vpnv4 is a BGP configuration mode for handling VPN4 routing information
+- The activate command enables the exchange of VPN4 information with the router.
+- The send-community both command attaches both Standard and Extended BGP communities. Route Targets are classified as extended, if this command isnt configured the routers in AS2 wont know which vrf route the packets belong to. 
 ```
  address-family vpnv4
   neighbor 3.3.3.3 activate
