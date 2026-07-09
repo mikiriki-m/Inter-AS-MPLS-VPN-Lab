@@ -250,12 +250,12 @@ The following entries reflect the active local routing state extracted from PE1'
 
 The exchange table mapping how multi-protocol labels cross autonomous boundaries, from the perspective of `ASBR1`:
 
-| Route Distinguisher (RD) | Target Network Prefix | Next Hop Address | Metric / LocPrf | AS-Path / Origin Type |
+| Route Distinguisher (RD) | Target Network Prefix | Next Hop Address | AS-Path / Origin Type |
 | :--- | :--- | :--- | :---: | :--- |
-| **1:1** (VPN1 via PE1) | [cite_start]`11.11.11.11/32` [cite: 64] | [cite_start]`1.1.1.1` [cite: 64] | [cite_start]0 / 100 [cite: 64] | [cite_start]`65001 i` [cite: 64] |
-| **1:2** (VPN2 via PE1) | [cite_start]`22.22.22.22/32` [cite: 64, 65] | [cite_start]`1.1.1.1` [cite: 64] | [cite_start]0 / 100 [cite: 65] | [cite_start]`65002 i` [cite: 65] |
-| **3:1** (Remote ASBR2) | [cite_start]`33.33.33.33/32` [cite: 65] | [cite_start]`10.12.0.4` [cite: 65] | *N/A* | [cite_start]`2 65003 i` [cite: 65] |
-| **4:1** (Remote ASBR2) | [cite_start]`44.44.44.44/32` [cite: 65] | [cite_start]`10.12.0.4` [cite: 65] | *N/A* | [cite_start]`2 65004 i` [cite: 65] |
+| **1:1** (VPN1 via PE1) | [cite_start]`11.11.11.11/32` [cite: 64] | [cite_start]`1.1.1.1` [cite: 64] |  [cite_start]`65001 i` [cite: 64] |
+| **1:2** (VPN2 via PE1) | [cite_start]`22.22.22.22/32` [cite: 64, 65] | [cite_start]`1.1.1.1` [cite: 64] | [cite_start]`65002 i` [cite: 65] |
+| **3:1** (Remote ASBR2) | [cite_start]`33.33.33.33/32` [cite: 65] | [cite_start]`10.12.0.4` [cite: 65] |  [cite_start]`2 65003 i` [cite: 65] |
+| **4:1** (Remote ASBR2) | [cite_start]`44.44.44.44/32` [cite: 65] | [cite_start]`10.12.0.4` [cite: 65] | [cite_start]`2 65004 i` [cite: 65] |
 
 ---
 ## 4. MPLS Architectural & Path Analysis
