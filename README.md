@@ -48,7 +48,11 @@ interface GigabitEthernet1/0
  negotiation auto
 ```
 
-To configure BGP, a private AS number is assigned. The system logs when a neighbour session goes up or down (useful for logging and debugging). The network command advertises the loopback address if it exists in the routing table. The command neighbour defines the remote peer (Neighbour IP:Remote AS). In this example, the local AS number (65001) is different from the remote AS number (1), which means this is an eBGP session:
+BGP configuration:
+- A private AS number is assigned.
+- The system logs when a neighbour session goes up or down (useful for logging and debugging).
+- The network command advertises the loopback address if it exists in the routing table.
+-The command neighbour defines the remote peer (Neighbour IP:Remote AS). In this example, the local AS number (65001) is different from the remote AS number (1), which means this is an eBGP session:
 ```
 router bgp 65001
  bgp log-neighbor-changes
