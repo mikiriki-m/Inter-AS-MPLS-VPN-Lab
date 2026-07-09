@@ -1,6 +1,6 @@
 # Inter-AS-MPLS-VPN-Lab
 
-![Alt Text](Images/Inter-AS-MPLS-VPN_Diagram.png)
+![Alt Text](images/Topology.png)
 
 To recreate an Inter-AS-MPLS-VPN Type B network, it must contain two different autonomous systems (AS) and the VPN should span these two systems. Option B allows autonomous system boundary routers (ASBR) to exchange VPN routes using the external boundary gate protocol (eBGP).
 
@@ -223,3 +223,24 @@ To verify that the configuration works on CE1:
 ```
 ping 33.33.33.33 source 11.11.11.11
 ```
+![Alt Text](images/CE1Ping.png)
+
+IP routes for VPN1 on PE1:
+```
+show ip route vrf VPN1
+```
+![Alt Text](images/PE1IProute.png)
+
+OSPF routes of PE1:
+```
+show ip ospf neighbour
+```
+![Alt Text](images/PE1OSPF.png)
+
+VPNv4 summary of ASBR1:
+```
+show bgp vpnv4 unicast all summary
+```
+![Alt Text](images/ASBRVPNv4.png)
+
+
