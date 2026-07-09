@@ -1,6 +1,6 @@
 # Inter-AS-MPLS-VPN-Lab
 
-![Alt Text](Images/Inter-AS-MPLS-VPN-B.png.URL)
+![Alt Text](Images/Inter-AS-MPLS-VPN_Diagram.png)
 
 To recreate an Inter-AS-MPLS-VPN Type B network, it must contain two different autonomous systems (AS) and the VPN should span these two systems. Option B allows autonomous system boundary routers (ASBR) to exchange VPN routes using the external boundary gate protocol (eBGP).
 
@@ -26,6 +26,6 @@ GNS3 was used to simulate this lab. The routers were emulated with Dynamips and 
 
 # Configuration
 
-Firstly, 
+Firstly, the topology was 
 
 
