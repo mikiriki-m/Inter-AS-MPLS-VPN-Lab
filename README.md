@@ -24,6 +24,21 @@ To recreate an Inter-AS-MPLS-VPN Type B network, it must contain two different a
 
 GNS3 was used to simulate this lab. The routers were emulated with Dynamips and the images used were for the c7200x series.
 
+# Network Topology & Routing Table Documentation
+| Device | Interface | IP Address | Subnet Mask | Role / Connection |
+| :--- | :--- | :--- | :--- | :--- |
+| **CE1** | Loopback0 | `11.11.11.11` | `255.255.255.255` | Router ID / Loopback |
+| | GigabitEthernet1/0 | `10.1.11.1` | `255.255.255.0` | Link to PE1 |
+| **CE2** | Loopback0 | `22.22.22.22` | `255.255.255.255` | Router ID / Loopback |
+| | GigabitEthernet1/0 | `10.1.12.1` | `255.255.255.0` | Link to PE1 (VPN2) |
+| **PE1** | Loopback0 | `1.1.1.1` | `255.255.255.255` | Core Loopback / Router ID |
+| | GigabitEthernet1/0 | `10.1.13.1` | `255.255.255.0` | Core Link to ASBR1 (MPLS) |
+| | GigabitEthernet2/0 | `10.1.11.2` | `255.255.255.0` | Link to CE1 (VRF VPN1) |
+| | GigabitEthernet3/0 | `10.1.12.2` | `255.255.255.0` | Link to CE2 (VRF VPN2) |
+| **ASBR1** | Loopback0 | `3.3.3.3` | `255.255.255.255` | Core Loopback / Router ID |
+| | GigabitEthernet1/0 | `10.1.13.3` | `255.255.255.0` | Core Link to PE1 (MPLS) |
+| | GigabitEthernet2/0 | `10.12.0.3` | `255.255.255.0` | Inter-AS Link to ASBR2 |
+
 # Configuration
 
 ![Alt Text](Images/Topology.png)
@@ -202,17 +217,9 @@ neighbor 10.12.0.4 activate
  exit-address-family
 ```
 
-# Network Topology & Routing Table Documentation
-| Device | Interface | IP Address | Subnet Mask | Description / Connection |
-| :--- | :--- | :--- | :--- | :--- |
-| **CE1** | Loopback0 | `11.11.11.11` | `255.255.255.255` | Router ID / Loopback |
-| | GigabitEthernet1/0 | `10.1.11.1` | `255.255.255.0` | Link to PE1 |
-| **CE2** | Loopback0 | `22.22.22.22` | `255.255.255.255` | Router ID / Loopback |
-| | GigabitEthernet1/0 | `10.1.12.1` | `255.255.255.0` | Link to PE1 (VPN2) |
-| **PE1** | Loopback0 | `1.1.1.1` | `255.255.255.255` | Core Loopback / Router ID |
-| | GigabitEthernet1/0 | `10.1.13.1` | `255.255.255.0` | Core Link to ASBR1 (MPLS) |
-| | GigabitEthernet2/0 | `10.1.11.2` | `255.255.255.0` | Link to CE1 (VRF VPN1) |
-| | GigabitEthernet3/0 | `10.1.12.2` | `255.255.255.0` | Link to CE2 (VRF VPN2) |
-| **ASBR1** | Loopback0 | `3.3.3.3` | `255.255.255.255` | Core Loopback / Router ID |
-| | GigabitEthernet1/0 | `10.1.13.3` | `255.255.255.0` | Core Link to PE1 (MPLS) |
-| | GigabitEthernet2/0 | `10.12.0.3` | `255.255.255.0` | Inter-AS Link to ASBR2 |
+# Verification
+
+To verify that the configuration works on CE1:
+```
+ping 33.33.33.33 source 11.11.11.11
+```
