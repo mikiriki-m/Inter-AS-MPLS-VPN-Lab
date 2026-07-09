@@ -4,18 +4,18 @@
 
 To recreate an Inter-AS-MPLS-VPN Type B network, it must contain two different autonomous systems (AS) and the VPN should span these two systems. Option B allows autonomous system boundary routers (ASBR) to exchange VPN routes using the external boundary gate protocol (eBGP).
 
-Option B 
+## Option B 
 1. Uses one MP-BGP session between ASBR1 and ASBR2 to carry all VPN routes.
 2. The ASBRs do not have vrf configured on them, they simply act as BGP routers and pass VPN labels.
 3. Label swapping happens between ASBR 1 and ASBR2. It changes the next hop address to the current router and assigns a new MPLS label.
 
-Control Plane (Route Exchange)
+## Control Plane (Route Exchange)
 1. CE sends its routes to PE1
 2. PE1 translates these routes using the route distinguishers (RD) and sends them to ASBR1 using internal BGP (iBGP)
 3. ASBR1 sends the routes to ASBR2 using MP-BGP.
 4. ASBR2 passes the routes to PE2, which advertises the routes to CE3.
 
-Data Plane (Packet Forwarding)
+## Data Plane (Packet Forwarding)
 1. The packet is encapsulated in a two layer stack
 2. The outer label is to get the packet to the next hop or ASBR
 3. The inner label identifies the VPN
@@ -32,7 +32,7 @@ Firstly, the topology was configured as shown in the picture. The routing table 
 
 OSPF is configured on all routers apart from the link between ASBR1 and ASBR2 because it uses MP-BGP. MPLS is configured inside AS1 and AS2, and the link between ASes (ASBR1 and ASBR2). iBGP is configured inside the AS (PE1-ASBR1) and eBGP is placed between ASBR1 and ASBR2.
 
-CE1
+## CE1
 
 The loopback address is set because virtual routing and forwarding (VRF) is virtual. Therefore, OSPF will announce the loopback address to ensure that the BGP paths are stable.
 ```
