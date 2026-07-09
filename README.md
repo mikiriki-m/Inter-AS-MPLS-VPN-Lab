@@ -121,7 +121,8 @@ router bgp 1
  neighbor 3.3.3.3 remote-as 1
  neighbor 3.3.3.3 update-source Loopback0
 ```
-- Address family vpnv4 is a BGP configuration mode for handling VPN4 routing information
+
+- Address family vpnv4 is an iBGP configuration mode for handling VPN4 routing information
 - The activate command enables the exchange of VPN4 information with the router.
 - The send-community both command attaches both Standard and Extended BGP communities. Route Targets are classified as extended, if this command isnt configured the routers in AS2 wont know which vrf route the packets belong to. 
 ```
@@ -131,21 +132,75 @@ router bgp 1
  exit-address-family
 ```
 
+- The first command in this block targets the configuration of eBGP for VPN1
 ```
  address-family ipv4 vrf VPN1
   neighbor 10.1.11.1 remote-as 65001
   neighbor 10.1.11.1 activate
  exit-address-family
-```
 
-
-```
  address-family ipv4 vrf VPN2
   neighbor 10.1.12.1 remote-as 65002
   neighbor 10.1.12.1 activate
  exit-address-family
 ```
 
+## ASBR1 AUTONOMOUS SYSTEM BOUNDARY ROUTER
+
+```
+interface Loopback0
+ ip address 3.3.3.3 255.255.255.255
+```
+
+```
+interface GigabitEthernet1/0
+ description Link to PE1 (Internal Core)
+ ip address 10.1.13.3 255.255.255.0
+ mpls ip
+```
+
+No VRFs are configured on this router, traffic must stay encapsulated:
+- The commands mpls bgp forwarding and mpls ip ensures that traffic is forwarded based on MPLS tags, and not on traditional routing lookups.
+```
+interface GigabitEthernet2/0
+ description Inter-AS Link to ASBR2
+ ip address 10.12.0.3 255.255.255.0
+ mpls bgp forwarding
+ mpls ip
+```
+
+OSPF configuration:
+- Advertising ASBR1's loopback and internal ip address.
+- Does not advertise the inter-AS link as it remains private.
+```
+router ospf 1
+ network 3.3.3.3 0.0.0.0 area 0
+ network 10.1.13.0 0.0.0.255 area 0
+```
+
+```
+router bgp 1
+ no bgp default route-target filter
+```
+
+Enabling VPNv4 between ASBR1 and PE1:
+```
+address-family vpnv4
+  neighbor 1.1.1.1 activate
+  neighbor 1.1.1.1 send-community both
+```
+
+This command rewrites the next hop address of the advertised routes from ASBR2. The next hop address gets rewritten to the address of the current router (ASBR1). This prevents PE1 from trying to forward packets directly to ASBR2. 
+```
+neighbor 1.1.1.1 next-hop-self
+```
+
+Enabling eBGP to ASBR2:
+```
+neighbor 10.12.0.4 activate
+  neighbor 10.12.0.4 send-community both
+ exit-address-family
+```
 
 # Network Topology & Routing Table Documentation
 
