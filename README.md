@@ -34,6 +34,16 @@ OSPF is configured on all routers apart from the link between ASBR1 and ASBR2 be
 
 CE1
 
+The loopback address is set because virtual routing and forwarding (VRF) is virtual. Therefore, OSPF will announce the loopback address to ensure that the BGP paths are stable.
+```
+interface Loopback0
+ ip address 11.11.11.11 255.255.255.255
+```
 
-
-
+The interface to PE1 is configured:
+```
+interface GigabitEthernet1/0
+ description Link to PE1
+ ip address 10.1.11.1 255.255.255.0
+ negotiation auto
+```
