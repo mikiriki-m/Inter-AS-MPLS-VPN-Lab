@@ -26,6 +26,14 @@ GNS3 was used to simulate this lab. The routers were emulated with Dynamips and 
 
 # Configuration
 
-Firstly, the topology was 
+![Alt Text](Images/Topology.png)
+
+Firstly, the topology was configured as shown in the picture. The routing table shows the ip addresses and interfaces for each link. 
+
+OSPF is configured on all routers apart from the link between ASBR1 and ASBR2 because it uses MP-BGP. MPLS is configured inside AS1 and AS2, and the link between ASes (ASBR1 and ASBR2). iBGP is configured inside the AS (PE1-ASBR1) and eBGP is placed between ASBR1 and ASBR2.
+
+CE1
+
+
 
 
