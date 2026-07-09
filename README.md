@@ -32,7 +32,7 @@ Firstly, the topology was configured as shown in the picture. The routing table 
 
 OSPF is configured on all routers apart from the link between ASBR1 and ASBR2 because it uses MP-BGP. MPLS is configured inside AS1 and AS2, and the link between ASes (ASBR1 and ASBR2). iBGP is configured inside the AS (PE1-ASBR1) and eBGP is placed between ASBR1 and ASBR2.
 
-## CE1
+## CE1 CUSTOMER EDGE
 
 The loopback address is set because virtual routing and forwarding (VRF) is virtual. Therefore, OSPF will announce the loopback address to ensure that the BGP paths are stable.
 ```
@@ -47,3 +47,20 @@ interface GigabitEthernet1/0
  ip address 10.1.11.1 255.255.255.0
  negotiation auto
 ```
+
+To configure BGP, a private AS number is assigned. The system logs when a neighbour session goes up or down (useful for logging and debugging). The network command advertises the loopback address if it exists in the routing table. The command neighbour defines the remote peer (Neighbour IP:Remote AS). In this example, the local AS number (65001) is different from the remote AS number (1), which means this is an eBGP session:
+```
+router bgp 65001
+ bgp log-neighbor-changes
+ network 11.11.11.11 mask 255.255.255.255
+ neighbor 10.1.11.2 remote-as 1
+```
+
+On all routers, ip cef is enabled for high speed packet forwarding:
+```
+ip cef
+```
+
+## PE1 PROVIDER EDGE
+
+
