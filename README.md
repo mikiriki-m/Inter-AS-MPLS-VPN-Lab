@@ -67,4 +67,77 @@ ip cef
 
 ### PE1 PROVIDER EDGE
 
+VRFs are set up to isolate the routing tables for VPN1 and VPN 2:
+- The route distinguisher (RD) is a prepended to an IPV4 prefix. It is a unique identifier for the VPN (AS number:ID).
+- The route target is an attribute to control the import and export of routes. Exporting a route advertises that route from the PE. Importing a route places that route into the routing table of the VPN (AS:RD).
+```
+ip vrf VPN1
+ rd 1:1
+ route-target export 100:1
+ route-target import 100:1
 
+ip vrf VPN2
+ rd 1:2
+ route-target export 100:2
+ route-target import 100:2
+```
+
+Interface Configuration:
+- ASBR facing links (G1/0) uses MPLS instead of standard routing by using command mpls ip.
+- CE facing links (G2/0-G3/0) uses command ip vrf forwarding VPNx to strip standard IP routing and place it into an isolated routing sandbox VPNx.
+```
+interface GigabitEthernet1/0
+ description Core Link to ASBR1
+ ip address 10.1.13.1 255.255.255.0
+ negotiation auto
+ mpls ip
+
+interface GigabitEthernet2/0
+ description Connects to CE1 (VPN1)
+ ip vrf forwarding VPN1
+ ip address 10.1.11.2 255.255.255.0
+
+interface GigabitEthernet3/0
+ description Connects to CE2 (VPN2)
+ ip vrf forwarding VPN2
+ ip address 10.1.12.2 255.255.255.0
+ negotiation auto
+```
+
+OSPF configuration:
+- OSPF runs internally within the AS to advertise its loopback address to ABR1 to allow BGP and the Label Distribution Protocol (LDP) to work. 
+```
+router ospf 1
+ network 1.1.1.1 0.0.0.0 area 0
+ network 10.1.13.0 0.0.0.255 area 0
+```
+
+MULTI-PROTOCOL BGP configuration:
+-
+```
+router bgp 1
+ bgp log-neighbor-changes
+ neighbor 3.3.3.3 remote-as 1
+ neighbor 3.3.3.3 update-source Loopback0
+```
+
+```
+ address-family vpnv4
+  neighbor 3.3.3.3 activate
+  neighbor 3.3.3.3 send-community both
+ exit-address-family
+```
+
+```
+ address-family ipv4 vrf VPN1
+  neighbor 10.1.11.1 remote-as 65001
+  neighbor 10.1.11.1 activate
+ exit-address-family
+```
+
+```
+ address-family ipv4 vrf VPN2
+  neighbor 10.1.12.1 remote-as 65002
+  neighbor 10.1.12.1 activate
+ exit-address-family
+```
